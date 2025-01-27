@@ -1,1 +1,0 @@
-# Grund-Databas-Relationell
