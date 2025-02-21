@@ -1,0 +1,128 @@
+
+-- SKapa tabeller
+
+
+
+CREATE TABLE customers (
+    customer_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    customer_name TEXT NOT NULL,
+    country TEXT NOT NULL);
+    
+CREATE TABLE products (
+    product_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    product_name TEXT NOT NULL,
+    price INTEGER NOT NULL,
+    product_category TEXT NOT NULL); 
+    
+
+
+CREATE TABLE orders (
+order_id INTEGER PRIMARY KEY AUTOINCREMENT,
+customer_id INTEGER,
+order_date TEXT NOT NULL,
+FOREIGN KEY (customer_id) REFERENCES customers(customer_id) ON DELETE CASCADE ON UPDATE CASCADE);
+
+CREATE TABLE order_details(
+    order_id INTEGER,
+    product_id INTEGER,
+    quantity INTEGER NOT NULL,
+    PRIMARY KEY (order_id,product_id),
+    FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE CASCADE ON UPDATE CASCADE); 
+    
+
+-- Lägg in data i tabeller ----- C i CRUD -- Create - post
+
+INSERT INTO customers (customer_name, country) VALUES
+('Bill', 'Sweden'),
+('Boll', 'USA'),
+('Arne', 'Sweden');
+
+INSERT INTO customers (customer_name, country) VALUES
+('Calle', 'Sweden');
+
+INSERT INTO products (product_name, price, product_category) VALUES
+('Laptop',10000,'Electronics'),
+('Banana', 10,'Fruits'),
+('CellPhone', 5000, 'Electronics'),
+('Apple', 8, 'Fruits');
+
+INSERT INTO orders (customer_id, order_date) VALUES
+(1,'2025-01-21 14:15:18'),
+(2,'2024-05-21 12:15:18'),
+(2,datetime('now', 'localtime'));
+
+INSERT INTO order_details VALUES 
+(1, 1,2),
+(1,3,1),
+(2,2,10),
+(3,3,1),
+(4,2,10),
+(4,4,20),
+(5,1,1),
+(5,4,1),
+(6,3,5);
+
+
+-- läs data R i CRUD - READ - get
+
+-- läs från enskilda tabelelr
+select customer_name from customers;
+select product_name, price from products;
+select * from orders;
+select * from order_details;
+select * from products;
+
+-- läs från flera tabeller samtidigt
+
+SELECT  orders.order_date, customers.customer_name FROM 
+customers LEFT JOIN orders ON customers.customer_id = orders.customer_id; 
+
+
+-- multiple joins
+SELECT customers.customer_name, orders.order_date, products.product_name, order_details.quantity FROM
+order_details 
+JOIN orders ON order_details.order_id = orders.order_id 
+JOIN customers ON customers.customer_id = orders.customer_id
+JOIN products ON products.product_id = order_details.product_id;
+
+-- filter med WHERE
+SELECT customers.customer_name, customers.country,orders.order_date, products.product_name, order_details.quantity FROM
+order_details 
+JOIN orders ON order_details.order_id = orders.order_id 
+JOIN customers ON customers.customer_id = orders.customer_id
+JOIN products ON products.product_id = order_details.product_id
+WHERE customers.country = 'Sweden';
+
+SELECT customers.customer_name, customers.country,orders.order_date, products.product_name, order_details.quantity FROM
+order_details 
+JOIN orders ON order_details.order_id = orders.order_id 
+JOIN customers ON customers.customer_id = orders.customer_id
+JOIN products ON products.product_id = order_details.product_id
+WHERE customers.customer_id = 2;
+
+select * from customers WHERE customer_id = 1;
+
+
+-- filter med mönster LIKE (Wildcards: % = vad som helst, _ representerar ett tecken)
+select * from customers WHERE customer_name LIKE 'B%';
+
+select * from customers WHERE customer_name LIKE '__l_';
+
+-- DISTINCT ger oss unika värden
+
+select DISTINCT product_category from products;
+
+-- update
+
+SELECT * FROM products;
+
+UPDATE products SET price = price * 1.10;
+
+UPDATE products SET price = price * 1.10 
+WHERE product_category ='Electronics';
+
+-- delete
+DELETE FROM orders WHERE order_id = 1;
+
+
